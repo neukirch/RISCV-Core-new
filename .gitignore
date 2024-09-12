@@ -1,0 +1,14 @@
+.bsp
+.idea
+project
+.vscode
+.metals
+.bloop
+target
+test_run_dir
+*.json
+*.fir
+*.v
+dataparser.py
+riscv-tests/benchmarks/*.dump
+riscv-tests/benchmarks/*.riscv
