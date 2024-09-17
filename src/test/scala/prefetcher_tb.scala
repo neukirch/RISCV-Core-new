@@ -10,7 +10,7 @@ import scala.util.control.Breaks._
 import RISCV_TOP._
 
 
-class test_performance extends AnyFlatSpec with ChiselScalatestTester {
+class linear_test extends AnyFlatSpec with ChiselScalatestTester {
 
   "linear_test" should "work" in {
     test(new RISCV_TOP("src/test/programs/aaPerformance")).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
@@ -27,9 +27,9 @@ class test_performance extends AnyFlatSpec with ChiselScalatestTester {
               //dut.io.pc.poke((pc + 1).U)
 
               //println(s"--------------------------------------------------------\n")
-              println(s"i: ${i}, pc: ${pc}\n")
-              println(f"cacheValid: ${dut.io.IMEMCacheValid.peek().litValue}\n")
-              println(f"valid peek cache result: 0x${dut.io.IMEMOut.peek().litValue}%x\n")
+//              println(s"i: ${i}, pc: ${pc/4}\n")
+//              println(f"cacheValid: ${dut.io.IMEMCacheValid.peek().litValue}\n")
+//              println(f"valid peek cache result: 0x${dut.io.IMEMOut.peek().litValue}%x\n")
               pc += 4
               counter += 1
             }
@@ -45,55 +45,19 @@ class test_performance extends AnyFlatSpec with ChiselScalatestTester {
           dut.clock.step(1)
         }
       }
-
-
     }
   }
-  /*"linear_test" should "work" in {
-    test(new RISCV_TOP("src/test/programs/aaPerformance")).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
-      dut.clock.setTimeout(0)
-      var pc = 0
-      var counter = 0
+}
 
-      breakable {
-        for(i <- 0 until 1000) {
-          dut.io.IMEMAddr.poke((pc).U)
-          println(s"i: ${i}, pc: ${pc}, counter: ${counter}\n")
-          //println(s"i: ${i}, pc: ${pc}\n")
-          if(dut.io.IMEMCacheBusy.peek().litToBoolean){
-            println(s"busy\n")
-            if(dut.io.IMEMCacheValid.peek().litToBoolean) {
-              //dut.io.pc.poke((pc + 1).U)
-              counter += 1
-              println(s"--------------------------------------------------------\n")
 
-              println(f"valid peek cache result: 0x${dut.io.IMEMOut.peek().litValue}%x\n\n\n")
-
-              if (counter == 22) {
-                println(s"BREAK at i: ${i},xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n\n")
-                println(s"counter: ${counter}, xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
-                break() // Exit the loop early
-              }
-                pc += 4
-              }
-              println(f"cacheValid: ${dut.io.IMEMCacheValid.peek().litValue}, poke: ${pc}\n")
-            }
-          }
-
-          dut.io.IMEMAddr.poke((pc).U)
-          println(s"poke: ${pc}\n")
-
-          dut.clock.step(1)
-        }
-      }
-  }*/
+class loop_test extends AnyFlatSpec with ChiselScalatestTester {
 
   "loop_test" should "work" in {
     test(new RISCV_TOP("src/test/programs/aaPerformance")).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
       dut.clock.setTimeout(0)
       var pc = 0
       var counter = 0
-      println(f"loop_test start---------------xxxxxxxxxxx-----------------\n\n\n\n\n\n")
+      //      println(f"loop_test start---------------xxxxxxxxxxx-----------------\n\n\n\n\n\n")
       breakable {
         for(i <- 0 until 1000) {
           println(s"i: ${i}, pc: ${pc}\n")
@@ -103,9 +67,9 @@ class test_performance extends AnyFlatSpec with ChiselScalatestTester {
             if(dut.io.IMEMCacheValid.peek().litToBoolean) {
               //dut.io.pc.poke((pc + 1).U)
               counter += 1
-              println(s"--------------------------------------------------------\n")
-
-              println(f"valid peek cache result: 0x${dut.io.IMEMOut.peek().litValue}%x\n\n\n")
+              //              println(s"--------------------------------------------------------\n")
+              //
+              //              println(f"valid peek cache result: 0x${dut.io.IMEMOut.peek().litValue}%x\n\n\n")
               if(pc == 12){
                 pc = 40
               }
@@ -119,6 +83,56 @@ class test_performance extends AnyFlatSpec with ChiselScalatestTester {
                 pc = 16
               }
               else if (pc == 36){
+                println(s"BREAK at i: ${i},counter: ${counter} xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n\n")
+                break()  // Exit the loop early
+              }
+              else{
+                pc += 4
+              }
+              //              println(f"cacheValid: ${dut.io.IMEMCacheValid.peek().litValue}, poke: ${pc}\n")
+            }
+          }
+
+
+
+
+          dut.io.IMEMAddr.poke((pc).U)
+          //            println(f"poke: ${pc}\n")
+
+          dut.clock.step(1)
+        }
+      }
+
+
+    }
+  }
+}
+
+
+class cache_test extends AnyFlatSpec with ChiselScalatestTester {
+
+  "cache_test" should "work" in {
+    test(new RISCV_TOP("src/test/programs/aaPerformance")).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
+      dut.clock.setTimeout(0)
+      var pc = 0
+      var counter = 0
+      println(f"cache_test start---------------xxxxxxxxxxx-----------------\n\n\n\n\n\n")
+      breakable {
+        for(i <- 0 until 1000) {
+          println(s"i: ${i}, pc: ${pc}\n")
+          //println(s"i: ${i}, pc: ${pc}\n")
+          if(dut.io.IMEMCacheBusy.peek().litToBoolean){
+            //println(f"busy peek cache: 0x${dut.io.resultCache.peek().litValue}%x, busy peek cache: 0x${dut.io.resultCache.peek().litValue}%x\n")
+            if(dut.io.IMEMCacheValid.peek().litToBoolean) {
+              //dut.io.pc.poke((pc + 1).U)
+              counter += 1
+              println(s"--------------------------------------------------------\n")
+
+              println(f"valid peek cache result: 0x${dut.io.IMEMOut.peek().litValue}%x\n\n\n")
+              if(pc == 12 && counter < 15){
+                pc = 0
+              }
+              else if (pc == 36){
                 println(s"BREAK at i: ${i},xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n\n")
                 println(s"counter: ${counter}, xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
                 break()  // Exit the loop early
@@ -129,21 +143,16 @@ class test_performance extends AnyFlatSpec with ChiselScalatestTester {
               println(f"cacheValid: ${dut.io.IMEMCacheValid.peek().litValue}, poke: ${pc}\n")
             }
           }
-
-
-
-
-            dut.io.IMEMAddr.poke((pc).U)
-            println(f"poke: ${pc}\n")
+          dut.io.IMEMAddr.poke((pc).U)
+          println(f"poke: ${pc}\n")
 
           dut.clock.step(1)
         }
       }
-
-
     }
   }
 }
+
 
 
 
