@@ -62,16 +62,16 @@ class Cache (CacheFile: String, read_only: Boolean = false) extends Module{
 
   switch(stateReg) {
     is(idle) {
+      //printf(p"idle state at address: ${io.data_addr}, busy: ${io.busy},    valid: ${io.valid}\n")
+      //printf(p"cache idle/compare state\n")
       io.data_out := data_element(31, 0)
       when(io.read_en || io.write_en.getOrElse(false.B)) {
         io.busy := true.B
+        io.idleToCompare := true.B
         data_addr_reg := io.data_addr
         if (!read_only) data_in_reg.foreach(_ := io.data_in.get)
         statecount := false.B
 
-
-        //ADDED HERE------------------------------------------------------------------------------
-        io.idleToCompare := true.B
 
 
         index := (io.data_addr / 4.U) % cacheLines
@@ -81,6 +81,7 @@ class Cache (CacheFile: String, read_only: Boolean = false) extends Module{
 
         when(data_element_wire(57) && (data_element_wire(55, 32).asUInt === io.data_addr(31, 8).asUInt)) {
           printf(p"cache hit at address: ${io.data_addr}, busy: ${io.busy},    valid: ${io.valid}\n")
+          //printf(p"STATE CHANGE TO IDLE\n")
           stateReg := idle
           io.valid := true.B
           when(io.read_en) {
@@ -118,6 +119,7 @@ class Cache (CacheFile: String, read_only: Boolean = false) extends Module{
           }
           cache_data_array(index_wire) := temp.asUInt
           io.data_out := io.prefData
+          //printf(p"STATE CHANGE TO IDLE\n")
           stateReg := idle
           //
         }.otherwise {
@@ -139,7 +141,7 @@ class Cache (CacheFile: String, read_only: Boolean = false) extends Module{
     is(writeback) {
       io.busy := true.B
       //printf(p"state10: ${stateReg}\n")
-      //printf(p"writeback state\n")
+      //printf(p"cache writeback state\n")
       io.mem_write_en := true.B
       io.mem_read_en := false.B
       val temp = Wire(Vec(32, Bool()))
@@ -155,9 +157,9 @@ class Cache (CacheFile: String, read_only: Boolean = false) extends Module{
 
     is(allocate) {
       io.busy := true.B
-      //printf(p"state11: ${stateReg}\n")
+      //printf(p"cache allocate state\n")
       when(statecount) {
-        //printf(p"allocate state 2nd cycle\n")
+        //printf(p"allocate state 2nd cycle at address: ${io.data_addr}, busy: ${io.busy},    valid: ${io.valid}\n")
         statecount := false.B
         io.mem_read_en := false.B
         val temp = Wire(Vec(58, Bool()))
@@ -167,6 +169,7 @@ class Cache (CacheFile: String, read_only: Boolean = false) extends Module{
         temp(57) := true.B
         for (i <- 32 until 56) { temp(i) := data_addr_reg(i - 24) }
         cache_data_array(index) := temp.asUInt
+        //printf(p"STATE CHANGE TO IDLE\n")
         stateReg := idle
       }.otherwise {
         //printf(p"allocate state 1st cycle\n")

@@ -15,21 +15,50 @@ class linear_test extends AnyFlatSpec with ChiselScalatestTester {
   "linear_test" should "work" in {
     test(new RISCV_TOP("src/test/programs/aaPerformance")).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
       dut.clock.setTimeout(0)
+      println(f"---------------------------------------------linear_test start---------------------------------------------\n")
       var pc = 0
       var counter = 0
+      var test = 0
+
+      val expectedValues = Seq(
+        "h00000093".U, "h00100093".U, "h00200093".U, "h00300093".U,
+        "h00400093".U, "h00500093".U, "h00600093".U, "h00700093".U,
+        "h00800093".U, "h00900093".U, "h00A00093".U, "h00B00093".U,
+        "h00C00093".U, "h00D00093".U, "h00E00093".U, "h00F00093".U,
+        "h01000093".U, "h01100093".U, "h01200093".U, "h01300093".U,
+        "h01400093".U, "h01500093".U, "h01600093".U, "h01700093".U,
+        "h01800093".U, "h01900093".U, "h01A00093".U, "h01B00093".U,
+        "h01C00093".U, "h01D00093".U, "h01E00093".U, "h01F00093".U
+      )
+
+
+        var imemOut = dut.io.IMEMOut.peek().litValue
 
       breakable {
         for(i <- 0 until 1000) {
+          println(s"i: ${i}\n")
+          //println(f"i: ${i}, pc: ${pc/4}\n")
           //println(s"i: ${i}, pc: ${pc}\n")
           if(dut.io.IMEMCacheBusy.peek().litToBoolean){
             //println(f"busy peek cache: 0x${dut.io.resultCache.peek().litValue}%x, busy peek cache: 0x${dut.io.resultCache.peek().litValue}%x\n")
             if(dut.io.IMEMCacheValid.peek().litToBoolean) {
+
+
               //dut.io.pc.poke((pc + 1).U)
 
               //println(s"--------------------------------------------------------\n")
 //              println(s"i: ${i}, pc: ${pc/4}\n")
+//              println(f"\n")
+//              println(f"\n")
+//              println(f"\n")
 //              println(f"cacheValid: ${dut.io.IMEMCacheValid.peek().litValue}\n")
-//              println(f"valid peek cache result: 0x${dut.io.IMEMOut.peek().litValue}%x\n")
+//              println(f"valid peek cache result: 0x${dut.io.IMEMOut.peek().litValue}%x, pc: ${pc/4}\n")
+//              println(f"\n")
+//              println(f"\n")
+//              println(f"\n")
+              imemOut = dut.io.IMEMOut.peek().litValue
+              test = (pc % 128)/4
+              assert(imemOut == expectedValues(test).litValue, f"ADR ${test} PC ${pc}  failed: Expected 0x${expectedValues(test).litValue}%08x but got 0x${imemOut}%08x")
               pc += 4
               counter += 1
             }
@@ -38,7 +67,7 @@ class linear_test extends AnyFlatSpec with ChiselScalatestTester {
             //dut.io.pc.poke(0.U)
           dut.io.IMEMAddr.poke((pc).U)
 
-          if (counter == 22) {
+          if (dut.io.IMEMOut.peek().litValue == 51) {
             println(s"BREAK at i: $i, counter: ${counter},-------------------------------------------------------------\n\n\n\n")
             break()  // Exit the loop early
           }
@@ -55,35 +84,57 @@ class loop_test extends AnyFlatSpec with ChiselScalatestTester {
   "loop_test" should "work" in {
     test(new RISCV_TOP("src/test/programs/aaPerformance")).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
       dut.clock.setTimeout(0)
+      println(f"---------------------------------------------loop_test start---------------------------------------------\n")
       var pc = 0
       var counter = 0
+      var test = 0
+      val expectedValues = Seq(
+        "h00000093".U, "h00100093".U, "h00200093".U, "h00300093".U,
+        "h00400093".U, "h00500093".U, "h00600093".U, "h00700093".U,
+        "h00800093".U, "h00900093".U, "h00A00093".U, "h00B00093".U,
+        "h00C00093".U, "h00D00093".U, "h00E00093".U, "h00F00093".U,
+        "h01000093".U, "h01100093".U, "h01200093".U, "h01300093".U,
+        "h01400093".U, "h01500093".U, "h01600093".U, "h01700093".U,
+        "h01800093".U, "h01900093".U, "h01A00093".U, "h01B00093".U,
+        "h01C00093".U, "h01D00093".U, "h01E00093".U, "h01F00093".U
+      )
+
+
+      var imemOut = dut.io.IMEMOut.peek().litValue
+
+
       //      println(f"loop_test start---------------xxxxxxxxxxx-----------------\n\n\n\n\n\n")
       breakable {
         for(i <- 0 until 1000) {
           println(s"i: ${i}, pc: ${pc}\n")
           //println(s"i: ${i}, pc: ${pc}\n")
+          //println(s"i: ${i}, pc: ${pc}\n")
           if(dut.io.IMEMCacheBusy.peek().litToBoolean){
-            //println(f"busy peek cache: 0x${dut.io.resultCache.peek().litValue}%x, busy peek cache: 0x${dut.io.resultCache.peek().litValue}%x\n")
             if(dut.io.IMEMCacheValid.peek().litToBoolean) {
               //dut.io.pc.poke((pc + 1).U)
+              imemOut = dut.io.IMEMOut.peek().litValue
+              test = (pc % 128)/4
+              assert(imemOut == expectedValues(test).litValue, f"ADR ${test} PC ${pc}  failed: Expected 0x${expectedValues(test).litValue}%08x but got 0x${imemOut}%08x")
               counter += 1
               //              println(s"--------------------------------------------------------\n")
               //
-              //              println(f"valid peek cache result: 0x${dut.io.IMEMOut.peek().litValue}%x\n\n\n")
-              if(pc == 12){
-                pc = 40
+              if(pc == 12*4){
+                pc = 20*4
               }
-              else if(pc == 52){
-                pc = 80
+              else if(pc == 32*4){
+                pc = 40*4
               }
-              else if(pc == 92){
-                pc = 120
-              }//all buffers full
-              else if(pc== 132){
-                pc = 16
+              else if(pc == 52*4){
+                pc = 60*4
+              }//all buffers full, flush
+              else if(pc== 72*4){
+                pc = 80*4
               }
-              else if (pc == 36){
-                println(s"BREAK at i: ${i},counter: ${counter} xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n\n")
+              else if(pc== 92*4){
+                pc = 100*4
+              }
+              else if (pc == 120*4 || i == 999){
+                println(s"BREAK at i: ${i},counter: ${counter}\n")
                 break()  // Exit the loop early
               }
               else{
@@ -100,6 +151,7 @@ class loop_test extends AnyFlatSpec with ChiselScalatestTester {
           //            println(f"poke: ${pc}\n")
 
           dut.clock.step(1)
+          println(s"\n\n")
         }
       }
 
@@ -114,37 +166,58 @@ class cache_test extends AnyFlatSpec with ChiselScalatestTester {
   "cache_test" should "work" in {
     test(new RISCV_TOP("src/test/programs/aaPerformance")).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
       dut.clock.setTimeout(0)
+      println(f"---------------------------------------------cache_test start---------------------------------------------\n")
       var pc = 0
       var counter = 0
-      println(f"cache_test start---------------xxxxxxxxxxx-----------------\n\n\n\n\n\n")
+      var test = 0
+
+      val expectedValues = Seq(
+        "h00000093".U, "h00100093".U, "h00200093".U, "h00300093".U,
+        "h00400093".U, "h00500093".U, "h00600093".U, "h00700093".U,
+        "h00800093".U, "h00900093".U, "h00A00093".U, "h00B00093".U,
+        "h00C00093".U, "h00D00093".U, "h00E00093".U, "h00F00093".U,
+        "h01000093".U, "h01100093".U, "h01200093".U, "h01300093".U,
+        "h01400093".U, "h01500093".U, "h01600093".U, "h01700093".U,
+        "h01800093".U, "h01900093".U, "h01A00093".U, "h01B00093".U,
+        "h01C00093".U, "h01D00093".U, "h01E00093".U, "h01F00093".U
+      )
+
+
+      var imemOut = dut.io.IMEMOut.peek().litValue
+
+
+      //println(f"cache_test start---------------xxxxxxxxxxx-----------------\n\n\n\n\n\n")
       breakable {
         for(i <- 0 until 1000) {
-          println(s"i: ${i}, pc: ${pc}\n")
+          println(s"i: ${i}\n")
+          //println(s"i: ${i}, pc: ${pc}\n")
           //println(s"i: ${i}, pc: ${pc}\n")
           if(dut.io.IMEMCacheBusy.peek().litToBoolean){
             //println(f"busy peek cache: 0x${dut.io.resultCache.peek().litValue}%x, busy peek cache: 0x${dut.io.resultCache.peek().litValue}%x\n")
             if(dut.io.IMEMCacheValid.peek().litToBoolean) {
               //dut.io.pc.poke((pc + 1).U)
               counter += 1
-              println(s"--------------------------------------------------------\n")
+              //println(s"--------------------------------------------------------\n")
 
-              println(f"valid peek cache result: 0x${dut.io.IMEMOut.peek().litValue}%x\n\n\n")
+              //println(f"valid peek cache result: 0x${dut.io.IMEMOut.peek().litValue}%x\n\n\n")
+              imemOut = dut.io.IMEMOut.peek().litValue
+              test = (pc % 128)/4
+              assert(imemOut == expectedValues(test).litValue, f"ADR ${test} PC ${pc}  failed: Expected 0x${expectedValues(test).litValue}%08x but got 0x${imemOut}%08x")
               if(pc == 12 && counter < 15){
                 pc = 0
               }
               else if (pc == 36){
-                println(s"BREAK at i: ${i},xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n\n")
-                println(s"counter: ${counter}, xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+                println(s"BREAK at i: ${i}, counter: ${counter}\n")
                 break()  // Exit the loop early
               }
               else{
                 pc += 4
               }
-              println(f"cacheValid: ${dut.io.IMEMCacheValid.peek().litValue}, poke: ${pc}\n")
+              //println(f"cacheValid: ${dut.io.IMEMCacheValid.peek().litValue}, poke: ${pc}\n")
             }
           }
           dut.io.IMEMAddr.poke((pc).U)
-          println(f"poke: ${pc}\n")
+          //println(f"poke: ${pc}\n")
 
           dut.clock.step(1)
         }
@@ -153,6 +226,57 @@ class cache_test extends AnyFlatSpec with ChiselScalatestTester {
   }
 }
 
+
+class random_test extends AnyFlatSpec with ChiselScalatestTester {
+
+  "random_test" should "work" in {
+    test(new RISCV_TOP("src/test/programs/aaPerformance")).withAnnotations(Seq(WriteVcdAnnotation)) { dut =>
+      dut.clock.setTimeout(0)
+      println(f"---------------------------------------------random_test start---------------------------------------------\n")
+      var pc = 0
+      var counter = 0
+      var test = 0
+
+      val expectedValues = Seq(
+        "h00000093".U, "h00100093".U, "h00200093".U, "h00300093".U,
+        "h00400093".U, "h00500093".U, "h00600093".U, "h00700093".U,
+        "h00800093".U, "h00900093".U, "h00A00093".U, "h00B00093".U,
+        "h00C00093".U, "h00D00093".U, "h00E00093".U, "h00F00093".U,
+        "h01000093".U, "h01100093".U, "h01200093".U, "h01300093".U,
+        "h01400093".U, "h01500093".U, "h01600093".U, "h01700093".U,
+        "h01800093".U, "h01900093".U, "h01A00093".U, "h01B00093".U,
+        "h01C00093".U, "h01D00093".U, "h01E00093".U, "h01F00093".U
+      )
+
+
+      var imemOut = dut.io.IMEMOut.peek().litValue
+
+      val random = scala.util.Random
+        for(i <- 0 until 200) {
+          println(s"i: ${i}\n")
+          if(dut.io.IMEMCacheBusy.peek().litToBoolean){
+            if(dut.io.IMEMCacheValid.peek().litToBoolean) {
+              counter += 1
+              //println(s"--------------------------------------------------------\n")
+
+              //println(f"valid peek cache result: 0x${dut.io.IMEMOut.peek().litValue}%x\n\n\n")
+              imemOut = dut.io.IMEMOut.peek().litValue
+              test = (pc % 128)/4
+              assert(imemOut == expectedValues(test).litValue, f"ADR ${test} PC ${pc}  failed: Expected 0x${expectedValues(test).litValue}%08x but got 0x${imemOut}%08x")
+
+              //println(f"cacheValid: ${dut.io.IMEMCacheValid.peek().litValue}, poke: ${pc}\n")
+              pc = random.nextInt(192) * 4 //only 192 because 00000033 not in seq
+            }
+          }
+          dut.io.IMEMAddr.poke((pc).U)
+          //println(f"poke: ${pc}\n")
+
+          dut.clock.step(1)
+        }
+      println(s"counter: ${counter}, i=200\n")
+    }
+  }
+}
 
 
 

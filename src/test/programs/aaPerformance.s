@@ -1,3 +1,4 @@
+addi x1, x0, 0
 addi x1, x0, 1
 addi x1, x0, 2
 addi x1, x0, 3
@@ -29,6 +30,7 @@ addi x1, x0, 28
 addi x1, x0, 29
 addi x1, x0, 30
 addi x1, x0, 31
+addi x1, x0, 0
 addi x1, x0, 1
 addi x1, x0, 2
 addi x1, x0, 3
@@ -60,6 +62,7 @@ addi x1, x0, 28
 addi x1, x0, 29
 addi x1, x0, 30
 addi x1, x0, 31
+addi x1, x0, 0
 addi x1, x0, 1
 addi x1, x0, 2
 addi x1, x0, 3
@@ -91,6 +94,7 @@ addi x1, x0, 28
 addi x1, x0, 29
 addi x1, x0, 30
 addi x1, x0, 31
+addi x1, x0, 0
 addi x1, x0, 1
 addi x1, x0, 2
 addi x1, x0, 3
@@ -122,6 +126,7 @@ addi x1, x0, 28
 addi x1, x0, 29
 addi x1, x0, 30
 addi x1, x0, 31
+addi x1, x0, 0
 addi x1, x0, 1
 addi x1, x0, 2
 addi x1, x0, 3
@@ -153,6 +158,7 @@ addi x1, x0, 28
 addi x1, x0, 29
 addi x1, x0, 30
 addi x1, x0, 31
+addi x1, x0, 0
 addi x1, x0, 1
 addi x1, x0, 2
 addi x1, x0, 3
@@ -184,4 +190,21 @@ addi x1, x0, 28
 addi x1, x0, 29
 addi x1, x0, 30
 addi x1, x0, 31
-add x1, x0, x0
+add x0, x0, x0
+add x0, x0, x0
+add x0, x0, x0
+add x0, x0, x0
+add x0, x0, x0
+add x0, x0, x0
+add x0, x0, x0
+add x0, x0, x0
+add x0, x0, x0
+add x0, x0, x0
+add x0, x0, x0
+add x0, x0, x0
+add x0, x0, x0
+add x0, x0, x0
+add x0, x0, x0
+add x0, x0, x0
+add x0, x0, x0
+add x0, x0, x0
