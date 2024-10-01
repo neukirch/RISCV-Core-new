@@ -173,7 +173,7 @@ class prefetcher(IMemFile: String) extends Module {
             IMem.io.instructionAddress := io.missAddress + 4.U //set adress to fetch
             nextAdress(fetchBufWire) := io.missAddress + 4.U//update register
           state := fetch//go to fetch state
-        }..otherwise { //no hit, no buffer empty, need to flush a buffer
+        }.otherwise { //no hit, no buffer empty, need to flush a buffer
           leastU.io.flush := true.B //set flush signal to true to get which buffer is lru to flush
           state := flush //go to flush state
         }
