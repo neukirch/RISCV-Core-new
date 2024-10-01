@@ -126,7 +126,7 @@ class CacheAndMemory_test extends AnyFlatSpec with ChiselScalatestTester {
       //c.io.data_out.expect(2284362812L.U)
 
       c.clock.step()
-      c.clock.step()
-    }*/
+      c.clock.step()*/
+    }
   }
 }

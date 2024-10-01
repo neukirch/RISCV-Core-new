@@ -263,21 +263,20 @@ class random_test extends AnyFlatSpec with ChiselScalatestTester {
       var imemOut = dut.io.IMEMOut.peek().litValue
 
       val random = scala.util.Random
-        for(i <- 0 until 200) {
-          if(dut.io.IMEMCacheBusy.peek().litToBoolean){
-            if(dut.io.IMEMCacheValid.peek().litToBoolean) {
-              counter += 1
-              imemOut = dut.io.IMEMOut.peek().litValue
-              test = (pc % 128)/4
-              assert(imemOut == expectedValues(test).litValue, f"ADR ${test} PC ${pc}  failed: Expected 0x${expectedValues(test).litValue}%08x but got 0x${imemOut}%08x")
-              pc = random.nextInt(192) * 4 //only 192 because 00000033 not in seq
-            }
+      for (i <- 0 until 200) {
+        if (dut.io.IMEMCacheBusy.peek().litToBoolean) {
+          if (dut.io.IMEMCacheValid.peek().litToBoolean) {
+            counter += 1
+            imemOut = dut.io.IMEMOut.peek().litValue
+            test = (pc % 128) / 4
+            assert(imemOut == expectedValues(test).litValue, f"ADR ${test} PC ${pc}  failed: Expected 0x${expectedValues(test).litValue}%08x but got 0x${imemOut}%08x")
+            pc = random.nextInt(192) * 4 //only 192 because 00000033 not in seq
           }
-          dut.io.IMEMAddr.poke((pc).U)
-          dut.clock.step(1)
         }
+        dut.io.IMEMAddr.poke((pc).U)
+        dut.clock.step(1)
+      }
       println(s"random_test ENDE i=200, counter: ${counter}-----------------------------------------\n")
     }
   }
-
-
+}
