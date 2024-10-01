@@ -6,7 +6,7 @@ import org.scalatest.flatspec.AnyFlatSpec
 import DCache.CacheAndMemory
 
 class CacheAndMemory_test extends AnyFlatSpec with ChiselScalatestTester {
-  behavior of "DCache and Memory"
+  //behavior of "DCache and Memory"
   /*"read miss dirty" should "pass" in {
     test(new CacheAndMemory) { c =>
       //println("\n ---------------- test 1: read miss dirty ------------------\n")
@@ -127,6 +127,4 @@ class CacheAndMemory_test extends AnyFlatSpec with ChiselScalatestTester {
 
       c.clock.step()
       c.clock.step()*/
-    }
-  }
 }
