@@ -32,6 +32,7 @@ class RISCV_TOP(BinaryFile: String, DataFile: String = "src/main/scala/DataMemor
       val IMEMOut                = Output(UInt(32.W))
       val IMEMCacheValid         = Output(Bool())
       val IMEMCacheBusy          = Output(Bool())
+      val cacheOnly              = Input(Bool())
       //
 
       val DMEMWriteData          = Input(UInt(32.W))
@@ -63,6 +64,7 @@ class RISCV_TOP(BinaryFile: String, DataFile: String = "src/main/scala/DataMemor
   io.IMEMOut := top_MC.IMEMOut
   io.IMEMCacheValid := top_MC.IMEMCacheValid
   io.IMEMCacheBusy := top_MC.IMEMCacheBusy
+  top_MC.cacheOnly := io.cacheOnly
   //
 
 

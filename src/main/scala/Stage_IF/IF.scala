@@ -30,6 +30,7 @@ class IF(BinaryFile: String) extends Module
       val IMEMOut                = Output(UInt(32.W))
       val IMEMCacheValid         = Output(Bool())
       val IMEMCacheBusy          = Output(Bool())
+      val cacheOnly              = Input(Bool())
       //
     }
   )
@@ -72,6 +73,7 @@ class IF(BinaryFile: String) extends Module
   testHarness.IMEMOut := InstructionMemory.io.instr_out
   testHarness.IMEMCacheValid := InstructionMemory.io.valid
   testHarness.IMEMCacheBusy := InstructionMemory.io.busy
+  InstructionMemory.io.cacheOnly := testHarness.cacheOnly
   //
 
 

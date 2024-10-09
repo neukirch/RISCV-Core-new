@@ -23,6 +23,7 @@ class PrefICacheIMem (IMemFile : String) extends Module {
     val instr_out = Output(UInt(32.W))
     val valid = Output(Bool())
     val busy = Output(Bool())
+    val cacheOnly = Input(Bool())
   })
 
   val icacheimem = Module(new ICacheAndIMemory(IMemFile))
@@ -37,6 +38,8 @@ class PrefICacheIMem (IMemFile : String) extends Module {
   io.instr_out := pref.io.result
   icacheimem.io.hit := pref.io.hit
   icacheimem.io.prefData := pref.io.result
+
+  pref.io.cacheOnly := io.cacheOnly
 
 
   //icacheimem.io.instr_addr := io.instr_addr

@@ -36,6 +36,7 @@ class top_MC(BinaryFile: String, DataFile: String) extends Module {
    val IMEMOut                = Output(UInt(32.W))
    val IMEMCacheValid         = Output(Bool())
    val IMEMCacheBusy          = Output(Bool())
+   val cacheOnly              = Input(Bool())
    //
   }
  )
@@ -60,6 +61,7 @@ class top_MC(BinaryFile: String, DataFile: String) extends Module {
  testHarness.IMEMOut := IF.testHarness.IMEMOut
  testHarness.IMEMCacheValid := IF.testHarness.IMEMCacheValid
  testHarness.IMEMCacheBusy := IF.testHarness.IMEMCacheBusy
+ IF.testHarness.cacheOnly := testHarness.cacheOnly
  //
 
  IF.testHarness.InstructionMemorySetup := testHarness.setupSignals.IMEMsignals

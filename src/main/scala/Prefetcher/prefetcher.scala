@@ -17,6 +17,8 @@ class prefetcher(IMemFile: String) extends Module {
     val idleToCompare = Input(Bool())       //is cache only in idle or was there a miss
     val result = Output(UInt(32.W))         //output of instruction at the requested address
     val hit = Output(Bool())                //show that there was a hit in a buffer
+
+    val cacheOnly = Input(Bool())
   })
 
   //setup outputs
@@ -101,7 +103,10 @@ class prefetcher(IMemFile: String) extends Module {
             buffer(fetchBufWire).deq.ready := true.B //start dequeue
             io.result := buffer(fetchBufWire).deq.bits(31, 0) //output data
             IMem.io.instructionAddress := nextAdress(fetchBufWire)//set next adress to fetch
-            io.hit := true.B//set hit to true to show there was a hit in a buffer
+            when(io.cacheOnly === false.B){
+              io.hit := true.B//set hit to true to show there was a hit in a buffer
+            }
+
             state := fetch //go to fetch state
           }
 
@@ -162,11 +167,13 @@ class prefetcher(IMemFile: String) extends Module {
               nextAdress(fetchBufWire) := nextAdress(fetchBufWire) + 4.U//update register
               state := fetch //go to fetch state
             }.otherwise {
-            buffer(fetchBufWire).deq.ready := true.B //start dequeue
-            io.result := buffer(fetchBufWire).deq.bits(31, 0) //output data
-            IMem.io.instructionAddress := nextAdress(fetchBufWire) + 4.U //set next address to fetch
-            nextAdress(fetchBufWire) := nextAdress(fetchBufWire) + 4.U//update register
-            io.hit := true.B//set hit to true to show there was a hit in a buffer
+              buffer(fetchBufWire).deq.ready := true.B //start dequeue
+              io.result := buffer(fetchBufWire).deq.bits(31, 0) //output data
+              IMem.io.instructionAddress := nextAdress(fetchBufWire) + 4.U //set next address to fetch
+              nextAdress(fetchBufWire) := nextAdress(fetchBufWire) + 4.U//update register
+              when(io.cacheOnly === false.B){
+                io.hit := true.B//set hit to true to show there was a hit in a buffer
+              }
               state := fetch //go to fetch state
           }
         }.elsewhen(emptyCheck === true.B) { //no hit, but a buffer is empty, start fetching at adress after miss
